@@ -33,15 +33,21 @@ Robo robo;         // Um rodo
 Tiro* tiro = NULL; // Um tiro por vez
 Alvo alvo(0, 200); // Um alvo por vez
 
+static bool imgui_shouldRenderTransformationMatrices = false;
+static bool imgui_shouldRenderMainWindow = false;
+
 void imgui_display() {
-    {
-        ImGui::Begin("Robo");
+    if (imgui_shouldRenderMainWindow) {
+        ImGui::Begin("Robô", &imgui_shouldRenderMainWindow);
         ImGui::Text("Posicao: %f, %f", robo.ObtemX(), robo.ObtemY());
+        ImGui::Checkbox("Show Transformations",
+                        &imgui_shouldRenderTransformationMatrices);
         ImGui::End();
     }
 
-    {
-        ImGui::Begin("Transformation Matrices");
+    if (imgui_shouldRenderTransformationMatrices) {
+        ImGui::Begin("Transformation Matrices",
+                     &imgui_shouldRenderTransformationMatrices);
         ImGui::BeginTabBar("Transformation Tabs");
         std::vector<std::string> availableMatrices = Utils::getIDs();
 
@@ -139,6 +145,14 @@ void keyPress(unsigned char key, int x, int y) {
         if (!tiro)
             tiro = robo.Atira();
         break;
+    case '9':
+        imgui_shouldRenderTransformationMatrices =
+            !imgui_shouldRenderTransformationMatrices;
+        break;
+    case '0':
+        imgui_shouldRenderMainWindow = !imgui_shouldRenderMainWindow;
+        break;
+
     case 27:
         exit(0);
     }

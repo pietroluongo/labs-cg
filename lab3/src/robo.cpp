@@ -32,7 +32,7 @@ void Robo::DesenhaBraco(GLfloat x, GLfloat y, GLfloat theta1, GLfloat theta2,
                         GLfloat theta3) {
     glPushMatrix();
     glTranslatef(x, y, 0);
-    glRotatef(90, 0, 0, 1);
+    glRotatef(theta1, 0, 0, 1);
     DesenhaRect(paddleHeight, paddleWidth, 0, 0, 1);
     glPopMatrix();
 }
