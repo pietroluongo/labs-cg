@@ -39,6 +39,22 @@ static bool imgui_shouldRenderMainWindow = false;
 static bool shouldPreserveFramerateSpeed = true;
 static GLdouble framerate = 0;
 
+static int hits = 0;
+static char str[999];
+void* font = GLUT_BITMAP_9_BY_15;
+
+void printScore(GLfloat x, GLfloat y) {
+    glColor3f(1.0, 1.0, 1.0);
+    char* tmpString;
+    sprintf(str, "Atingido: %d", hits);
+    glRasterPos2f(x, y);
+    tmpString = str;
+    while (*tmpString) {
+        glutBitmapCharacter(font, *tmpString);
+        tmpString++;
+    }
+}
+
 void imgui_display() {
     if (imgui_shouldRenderMainWindow) {
         GLfloat tiroX = 0, tiroY = 0, gVel = 0, gAng = 0;
@@ -114,6 +130,8 @@ void renderScene(void) {
         tiro->Desenha();
 
     alvo.Desenha();
+
+    printScore(-240, -240);
 
     drawUI();
 
@@ -232,9 +250,12 @@ void idle(void) {
 
         // Trata colisao
         if (alvo.Atingido(tiro)) {
+            hits++;
             alvo.Recria(rand() % 500 - 250, 200);
+            delete tiro;
+            tiro = NULL;
+            return;
         }
-
         if (!tiro->Valido()) {
             delete tiro;
             tiro = NULL;
