@@ -23,10 +23,24 @@ void Robo::DesenhaRect(GLint height, GLint width, GLfloat R, GLfloat G,
     glEnd();
 }
 
-void Robo::DesenhaCirc(GLint radius, GLfloat R, GLfloat G, GLfloat B) {}
+void Robo::DesenhaCirc(GLint radius, GLfloat R, GLfloat G, GLfloat B) {
+    glColor3f(R, G, B);
+    glPointSize(4);
+    glBegin(GL_POINTS);
+    for (int i = 0; i < 360; i += 20) {
+        glVertex2f(radius * cos(i * M_PI / 180), radius * sin(i * M_PI / 180));
+    }
+    glEnd();
+}
 
 void Robo::DesenhaRoda(GLfloat x, GLfloat y, GLfloat thetaWheel, GLfloat R,
-                       GLfloat G, GLfloat B) {}
+                       GLfloat G, GLfloat B) {
+    glPushMatrix();
+    glTranslatef(x, y, 0);
+    glRotatef(thetaWheel, 0, 0, 1);
+    DesenhaCirc(radiusWheel, R, G, B);
+    glPopMatrix();
+}
 
 void Robo::DesenhaBraco(GLfloat x, GLfloat y, GLfloat theta1, GLfloat theta2,
                         GLfloat theta3) {
@@ -53,6 +67,8 @@ void Robo::DesenhaRobo(GLfloat x, GLfloat y, GLfloat thetaWheel, GLfloat theta1,
     glTranslatef(x, y, 0);
     Robo::DesenhaRect(baseHeight, baseWidth, 1, 0, 0);
     Robo::DesenhaBraco(0, baseHeight, theta1, theta2, theta3);
+    Robo::DesenhaRoda(-baseWidth / 2, 0, thetaWheel, 0, 0, 1);
+    Robo::DesenhaRoda(baseWidth / 2, 0, thetaWheel, 0, 0, 1);
     glPopMatrix();
 }
 
@@ -62,7 +78,10 @@ void Robo::RodaBraco2(GLfloat inc) { gTheta2 += inc; }
 
 void Robo::RodaBraco3(GLfloat inc) { gTheta3 += inc; }
 
-void Robo::MoveEmX(GLfloat dx) { gX += dx; }
+void Robo::MoveEmX(GLfloat dx) {
+    gX += dx;
+    gThetaWheel -= (180 * dx) / (M_PI * radiusWheel);
+}
 
 // Funcao auxiliar de rotacao
 void RotatePoint(GLfloat x, GLfloat y, GLfloat angle, GLfloat& xOut,

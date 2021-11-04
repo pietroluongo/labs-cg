@@ -12,7 +12,7 @@
 #include <stdlib.h>
 
 #define INC_KEY 1
-#define INC_KEYIDLE 0.1
+#define INC_KEYIDLE 1
 
 // Key status
 int keyStatus[256];
