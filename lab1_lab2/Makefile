@@ -18,8 +18,6 @@ IMGUI_OBJS := $(IMGUI_SOURCES:%=$(BUILD_DIR)/imgui/%.o)
 
 all: imgui square spline
 
-imgui: $(IMGUI_OBJS)
-
 $(BUILD_DIR)/imgui/%.o: $(IMGUI_DIR)/%.cpp | build_imgui
 	$(CXX) $(CFLAGS) -o $@ -c $< 
 
