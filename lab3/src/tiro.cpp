@@ -26,4 +26,4 @@ void Tiro::Move() {
 
 Tiro::~Tiro() { printf("Tiro destruido\n"); }
 
-bool Tiro::Valido() { return true; }
+bool Tiro::Valido() { return DISTANCIA_MAX > sqrt(pow(gX, 2) + pow(gY, 2)); }
