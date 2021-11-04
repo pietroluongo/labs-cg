@@ -49,7 +49,7 @@ class Robo {
     void RodaBraco1(GLfloat inc);
     void RodaBraco2(GLfloat inc);
     void RodaBraco3(GLfloat inc);
-    void MoveEmX(GLfloat dx);
+    void MoveEmX(GLfloat dx, GLdouble deltaTime);
     Tiro* Atira();
     GLfloat ObtemX() { return gX; };
     GLfloat ObtemY() { return gY; };

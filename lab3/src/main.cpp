@@ -12,7 +12,7 @@
 #include <stdlib.h>
 
 #define INC_KEY 1
-#define INC_KEYIDLE 1
+#define INC_KEYIDLE 0.1
 
 // Key status
 int keyStatus[256];
@@ -36,6 +36,9 @@ Alvo alvo(0, 200); // Um alvo por vez
 static bool imgui_shouldRenderTransformationMatrices = false;
 static bool imgui_shouldRenderMainWindow = false;
 
+static bool shouldPreserveFramerateSpeed = true;
+static GLdouble framerate = 0;
+
 void imgui_display() {
     if (imgui_shouldRenderMainWindow) {
         GLfloat tiroX = 0, tiroY = 0, gVel = 0, gAng = 0;
@@ -45,6 +48,7 @@ void imgui_display() {
             tiro->getVel(gVel);
         }
         ImGui::Begin("Robô", &imgui_shouldRenderMainWindow);
+        ImGui::Text("Framerate: %.2f", framerate);
         ImGui::Text("Posição: %f, %f", robo.ObtemX(), robo.ObtemY());
         ImGui::Text("Tiro:\n\tx: %f\n\ty: %f\n\ttheta: %f\n\tvel:%f\n\t", tiroX,
                     tiroY, gAng, gVel);
@@ -53,6 +57,8 @@ void imgui_display() {
         ImGui::Text("Theta3: %f", robo.ObtemTheta3());
         ImGui::Checkbox("Show Transformations",
                         &imgui_shouldRenderTransformationMatrices);
+        ImGui::Checkbox("Preserve Framerate Speed",
+                        &shouldPreserveFramerateSpeed);
         ImGui::End();
     }
 
@@ -200,19 +206,29 @@ void init(void) {
 }
 
 void idle(void) {
+    static GLdouble prevTime = glutGet(GLUT_ELAPSED_TIME);
+    GLdouble curTime, deltaTime;
+    curTime = glutGet(GLUT_ELAPSED_TIME);
+    deltaTime = curTime - prevTime;
+    prevTime = curTime;
+    framerate = 1.0 / deltaTime * 1000;
+
     double inc = INC_KEYIDLE;
+    if (!shouldPreserveFramerateSpeed) {
+        deltaTime = 1;
+    }
     // Treat keyPress
     if (keyStatus[(int)('a')]) {
-        robo.MoveEmX(-inc);
+        robo.MoveEmX(-inc, deltaTime);
     }
     if (keyStatus[(int)('d')]) {
-        robo.MoveEmX(inc);
+        robo.MoveEmX(inc, deltaTime);
     }
 
     // Trata o tiro (soh permite um tiro por vez)
     // Poderia usar uma lista para tratar varios tiros
     if (tiro) {
-        tiro->Move();
+        tiro->Move(deltaTime);
 
         // Trata colisao
         if (alvo.Atingido(tiro)) {
@@ -233,7 +249,7 @@ void idle(void) {
         } else if (robo.ObtemX() < -(ViewingWidth / 2)) {
             dir *= -1;
         }
-        robo.MoveEmX(dir * INC_KEYIDLE);
+        robo.MoveEmX(dir * INC_KEYIDLE, deltaTime);
     }
 
     glutPostRedisplay();

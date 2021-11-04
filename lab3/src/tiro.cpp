@@ -19,9 +19,9 @@ void Tiro::DesenhaTiro(GLfloat x, GLfloat y) {
     glPopMatrix();
 }
 
-void Tiro::Move() {
-    gX += gVel * sin(-gDirectionAng * M_PI / 180);
-    gY += gVel * cos(-gDirectionAng * M_PI / 180);
+void Tiro::Move(GLdouble deltaTime) {
+    gX += gVel * sin(-gDirectionAng * M_PI / 180) * deltaTime;
+    gY += gVel * cos(-gDirectionAng * M_PI / 180) * deltaTime;
 }
 
 Tiro::~Tiro() {}

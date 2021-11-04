@@ -78,9 +78,9 @@ void Robo::RodaBraco2(GLfloat inc) { gTheta2 += inc; }
 
 void Robo::RodaBraco3(GLfloat inc) { gTheta3 += inc; }
 
-void Robo::MoveEmX(GLfloat dx) {
-    gX += dx;
-    gThetaWheel -= (180 * dx) / (M_PI * radiusWheel);
+void Robo::MoveEmX(GLfloat dx, GLdouble deltaTime) {
+    gX += dx * deltaTime;
+    gThetaWheel -= (180 * dx * deltaTime) / (M_PI * radiusWheel);
 }
 
 // Funcao auxiliar de rotacao

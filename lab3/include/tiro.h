@@ -24,11 +24,11 @@ class Tiro {
         gX = x;
         gY = y;
         gDirectionAng = directionAng;
-        gVel = 5;
+        gVel = 0.1;
     };
     ~Tiro();
     void Desenha() { DesenhaTiro(gX, gY); };
-    void Move();
+    void Move(GLdouble deltaTime);
     bool Valido();
     void GetPos(GLfloat& xOut, GLfloat& yOut) {
         xOut = gX;
