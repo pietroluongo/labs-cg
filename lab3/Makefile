@@ -37,6 +37,9 @@ build:
 	mkdir build -p
 
 clean:
+	$(RM) $(BUILD_DIR)/*.o -rf
+
+clean-full:
 	$(RM) $(BUILD_DIR) -rf
 
 robotDeps: build/robo.o build/alvo.o build/tiro.o build/main.o build/utils.o

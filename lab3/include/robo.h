@@ -11,6 +11,9 @@
 #define baseWidth 100
 #define radiusWheel 30
 
+#define INITIAL_X_POSITION 0
+#define INITIAL_Y_POSITION -200;
+
 class Robo {
     GLfloat gX;
     GLfloat gY;
@@ -33,8 +36,8 @@ class Robo {
 
   public:
     Robo() {
-        gX = 0;
-        gY = -200;
+        gX = INITIAL_X_POSITION;
+        gY = INITIAL_Y_POSITION;
         gTheta1 = 0;
         gTheta2 = 0;
         gTheta3 = 0;

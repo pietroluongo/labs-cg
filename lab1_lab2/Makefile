@@ -45,4 +45,7 @@ build:
 imgui: $(IMGUI_OBJS) build
 
 clean:
+	$(RM) $(BUILD_DIR)/*.o -rf
+
+clean-full:
 	$(RM) $(BUILD_DIR) -rf

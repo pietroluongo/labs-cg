@@ -1,6 +1,6 @@
 #include "../include/robo.h"
 #include "../include/utils.h"
-#include <math.h>
+#include <cmath>
 
 /**
  * @brief Desenha um retângulo do robô
@@ -87,4 +87,19 @@ void Robo::MoveEmX(GLfloat dx) {
 void RotatePoint(GLfloat x, GLfloat y, GLfloat angle, GLfloat& xOut,
                  GLfloat& yOut) {}
 
-Tiro* Robo::Atira() {}
+Tiro* Robo::Atira() {
+    printf("Atirando!\n");
+    int radius = paddleHeight;
+    int firstX = gX + radius * sin(-gTheta1 * M_PI / 180);
+    int firstY = gY + baseHeight + radius * cos(-gTheta1 * M_PI / 180);
+
+    int secondX = firstX + (radius)*sin(-(gTheta1 + gTheta2) * M_PI / 180);
+    int secondY = firstY + (radius)*cos(-(gTheta1 + gTheta2) * M_PI / 180);
+    int thirdX =
+        secondX + radius * sin(-(gTheta1 + gTheta2 + gTheta3) * M_PI / 180);
+    int thirdY =
+        secondY + radius * cos(-(gTheta1 + gTheta2 + gTheta3) * M_PI / 180);
+
+    Tiro* t = new Tiro(thirdX, thirdY, gTheta1 + gTheta2 + gTheta3);
+    return t;
+}

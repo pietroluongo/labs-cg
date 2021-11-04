@@ -38,8 +38,16 @@ static bool imgui_shouldRenderMainWindow = false;
 
 void imgui_display() {
     if (imgui_shouldRenderMainWindow) {
+        GLfloat tiroX = 0, tiroY = 0, gVel = 0, gAng = 0;
+        if (tiro) {
+            tiro->GetPos(tiroX, tiroY);
+            tiro->getDirectionAng(gAng);
+            tiro->getVel(gVel);
+        }
         ImGui::Begin("Robô", &imgui_shouldRenderMainWindow);
-        ImGui::Text("Posicao: %f, %f", robo.ObtemX(), robo.ObtemY());
+        ImGui::Text("Posição: %f, %f", robo.ObtemX(), robo.ObtemY());
+        ImGui::Text("Tiro:\n\tx: %f\n\ty: %f\n\ttheta: %f\n\tvel:%f\n\t", tiroX,
+                    tiroY, gAng, gVel);
         ImGui::Text("Theta1: %f", robo.ObtemTheta1());
         ImGui::Text("Theta2: %f", robo.ObtemTheta2());
         ImGui::Text("Theta3: %f", robo.ObtemTheta3());
@@ -147,6 +155,10 @@ void keyPress(unsigned char key, int x, int y) {
     case ' ':
         if (!tiro)
             tiro = robo.Atira();
+        else {
+            delete tiro;
+            tiro = NULL;
+        }
         break;
     case '9':
         imgui_shouldRenderTransformationMatrices =
