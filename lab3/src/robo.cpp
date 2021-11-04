@@ -88,18 +88,13 @@ void RotatePoint(GLfloat x, GLfloat y, GLfloat angle, GLfloat& xOut,
                  GLfloat& yOut) {}
 
 Tiro* Robo::Atira() {
-    printf("Atirando!\n");
     int radius = paddleHeight;
+    int totalAngle = gTheta1 + gTheta2 + gTheta3;
     int firstX = gX + radius * sin(-gTheta1 * M_PI / 180);
     int firstY = gY + baseHeight + radius * cos(-gTheta1 * M_PI / 180);
-
     int secondX = firstX + (radius)*sin(-(gTheta1 + gTheta2) * M_PI / 180);
     int secondY = firstY + (radius)*cos(-(gTheta1 + gTheta2) * M_PI / 180);
-    int thirdX =
-        secondX + radius * sin(-(gTheta1 + gTheta2 + gTheta3) * M_PI / 180);
-    int thirdY =
-        secondY + radius * cos(-(gTheta1 + gTheta2 + gTheta3) * M_PI / 180);
-
-    Tiro* t = new Tiro(thirdX, thirdY, gTheta1 + gTheta2 + gTheta3);
-    return t;
+    int thirdX = secondX + radius * sin(-totalAngle * M_PI / 180);
+    int thirdY = secondY + radius * cos(-totalAngle * M_PI / 180);
+    return new Tiro(thirdX, thirdY, totalAngle);
 }

@@ -24,7 +24,7 @@ class Tiro {
         gX = x;
         gY = y;
         gDirectionAng = directionAng;
-        gVel = 1;
+        gVel = 5;
     };
     ~Tiro();
     void Desenha() { DesenhaTiro(gX, gY); };

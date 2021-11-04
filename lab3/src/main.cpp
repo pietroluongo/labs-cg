@@ -155,10 +155,6 @@ void keyPress(unsigned char key, int x, int y) {
     case ' ':
         if (!tiro)
             tiro = robo.Atira();
-        else {
-            delete tiro;
-            tiro = NULL;
-        }
         break;
     case '9':
         imgui_shouldRenderTransformationMatrices =

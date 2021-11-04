@@ -24,6 +24,6 @@ void Tiro::Move() {
     gY += gVel * cos(-gDirectionAng * M_PI / 180);
 }
 
-Tiro::~Tiro() { printf("Tiro destruido\n"); }
+Tiro::~Tiro() {}
 
 bool Tiro::Valido() { return DISTANCIA_MAX > sqrt(pow(gX, 2) + pow(gY, 2)); }
