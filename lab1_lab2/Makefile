@@ -3,7 +3,7 @@ CC = gcc
 CXX = g++
 
 BUILD_DIR = build
-IMGUI_DIR = imgui
+IMGUI_DIR = ../libs/imgui
 
 # compiler flags:
 #  -g    adds debugging information to the executable file
