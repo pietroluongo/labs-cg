@@ -34,6 +34,16 @@ void Robo::DesenhaBraco(GLfloat x, GLfloat y, GLfloat theta1, GLfloat theta2,
     glTranslatef(x, y, 0);
     glRotatef(theta1, 0, 0, 1);
     DesenhaRect(paddleHeight, paddleWidth, 0, 0, 1);
+    glPushMatrix();
+    glTranslatef(0, paddleHeight, 0);
+    glRotatef(theta2, 0, 0, 1);
+    DesenhaRect(paddleHeight, paddleWidth, 1, 1, 0);
+    glPushMatrix();
+    glTranslatef(0, paddleHeight, 0);
+    glRotatef(theta3, 0, 0, 1);
+    DesenhaRect(paddleHeight, paddleWidth, 0, 1, 0);
+    glPopMatrix();
+    glPopMatrix();
     glPopMatrix();
 }
 
@@ -46,13 +56,13 @@ void Robo::DesenhaRobo(GLfloat x, GLfloat y, GLfloat thetaWheel, GLfloat theta1,
     glPopMatrix();
 }
 
-void Robo::RodaBraco1(GLfloat inc) {}
+void Robo::RodaBraco1(GLfloat inc) { gTheta1 += inc; }
 
-void Robo::RodaBraco2(GLfloat inc) {}
+void Robo::RodaBraco2(GLfloat inc) { gTheta2 += inc; }
 
-void Robo::RodaBraco3(GLfloat inc) {}
+void Robo::RodaBraco3(GLfloat inc) { gTheta3 += inc; }
 
-void Robo::MoveEmX(GLfloat dx) { this->gX += dx; }
+void Robo::MoveEmX(GLfloat dx) { gX += dx; }
 
 // Funcao auxiliar de rotacao
 void RotatePoint(GLfloat x, GLfloat y, GLfloat angle, GLfloat& xOut,

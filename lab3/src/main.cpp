@@ -12,7 +12,7 @@
 #include <stdlib.h>
 
 #define INC_KEY 1
-#define INC_KEYIDLE 0.01
+#define INC_KEYIDLE 0.1
 
 // Key status
 int keyStatus[256];
@@ -40,6 +40,9 @@ void imgui_display() {
     if (imgui_shouldRenderMainWindow) {
         ImGui::Begin("Robô", &imgui_shouldRenderMainWindow);
         ImGui::Text("Posicao: %f, %f", robo.ObtemX(), robo.ObtemY());
+        ImGui::Text("Theta1: %f", robo.ObtemTheta1());
+        ImGui::Text("Theta2: %f", robo.ObtemTheta2());
+        ImGui::Text("Theta3: %f", robo.ObtemTheta3());
         ImGui::Checkbox("Show Transformations",
                         &imgui_shouldRenderTransformationMatrices);
         ImGui::End();
@@ -152,7 +155,6 @@ void keyPress(unsigned char key, int x, int y) {
     case '0':
         imgui_shouldRenderMainWindow = !imgui_shouldRenderMainWindow;
         break;
-
     case 27:
         exit(0);
     }

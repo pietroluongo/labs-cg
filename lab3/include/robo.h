@@ -50,6 +50,9 @@ class Robo {
     Tiro* Atira();
     GLfloat ObtemX() { return gX; };
     GLfloat ObtemY() { return gY; };
+    GLfloat ObtemTheta1() { return gTheta1; };
+    GLfloat ObtemTheta2() { return gTheta2; };
+    GLfloat ObtemTheta3() { return gTheta3; };
 };
 
 #endif /* ROBO_H */
