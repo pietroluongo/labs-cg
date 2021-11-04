@@ -1,0 +1,9 @@
+# Build artifacts
+build
+
+# Built binaries
+spline
+square
+
+# Imgui settings
+imgui.ini

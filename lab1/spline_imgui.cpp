@@ -191,10 +191,7 @@ void mouse(int button, int state, int x, int y)
       if (state == GLUT_DOWN) {
          // Arrasta o ponto de controle
          for(int i = 0; i < usedControlPoints; i++) {
-            double dist = 
-            printf("Comparing mouse's (%lf, %lf) with point's (%lf, %lf)\n", (double)x/windowSizeX, (double)y/windowSizeY, ctrlpoints[i][0], ctrlpoints[i][1]);
             if(distance((double)x/windowSizeX, (double)y/windowSizeY, ctrlpoints[i][0], ctrlpoints[i][1]) < 0.1) {
-               printf("HIT!\n");
                draggingPoint = ctrlpoints[i];
                break;
             }
