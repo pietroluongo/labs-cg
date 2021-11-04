@@ -7,4 +7,4 @@ void Alvo::DesenhaAlvo(GLfloat x, GLfloat y) {}
 
 void Alvo::Recria(GLfloat x, GLfloat y) {}
 
-bool Alvo::Atingido(Tiro *tiro) {}
+bool Alvo::Atingido(Tiro* tiro) {}
