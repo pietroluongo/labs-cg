@@ -3,6 +3,7 @@
 #include "../../libs/imgui/imgui_impl_opengl2.h"
 #include "../include/alvo.h"
 #include "../include/robo.h"
+#include "../include/utils.h"
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <GL/glut.h>
@@ -29,195 +30,223 @@ int animate = 0;
 
 // Componentes do mundo virtual sendo modelado
 Robo robo;         // Um rodo
-Tiro *tiro = NULL; // Um tiro por vez
+Tiro* tiro = NULL; // Um tiro por vez
 Alvo alvo(0, 200); // Um alvo por vez
 
 void imgui_display() {
-  {
-    ImGui::Begin("Robo");
-    ImGui::Text("Posicao: %f, %f", robo.ObtemX(), robo.ObtemY());
-    ImGui::End();
-  }
+    {
+        ImGui::Begin("Robo");
+        ImGui::Text("Posicao: %f, %f", robo.ObtemX(), robo.ObtemY());
+        ImGui::End();
+    }
+
+    {
+        ImGui::Begin("Transformation Matrices");
+        ImGui::BeginTabBar("Transformation Tabs");
+        std::vector<std::string> availableMatrices = Utils::getIDs();
+
+        for (std::string id : availableMatrices) {
+            if (ImGui::BeginTabItem(id.c_str())) {
+                float* transfMatrix = Utils::get(id);
+                ImGui::Text("%f, %f, %f, %f", transfMatrix[0], transfMatrix[1],
+                            transfMatrix[2], transfMatrix[3]);
+                ImGui::Text("%f, %f, %f, %f", transfMatrix[4], transfMatrix[5],
+                            transfMatrix[6], transfMatrix[7]);
+                ImGui::Text("%f, %f, %f, %f", transfMatrix[8], transfMatrix[9],
+                            transfMatrix[10], transfMatrix[11]);
+                ImGui::Text("%f, %f, %f, %f", transfMatrix[12],
+                            transfMatrix[13], transfMatrix[14],
+                            transfMatrix[15]);
+                ImGui::EndTabItem();
+            }
+        }
+
+        ImGui::EndTabBar();
+
+        ImGui::End();
+    }
 }
 
 void drawUI() {
-  ImGui_ImplOpenGL2_NewFrame();
-  ImGui_ImplGLUT_NewFrame();
+    ImGui_ImplOpenGL2_NewFrame();
+    ImGui_ImplGLUT_NewFrame();
 
-  imgui_display();
+    imgui_display();
 
-  ImGui::Render();
-  ImGuiIO &io = ImGui::GetIO();
-  glViewport(0, 0, (GLsizei)io.DisplaySize.x, (GLsizei)io.DisplaySize.y);
-  ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
+    ImGui::Render();
+    ImGuiIO& io = ImGui::GetIO();
+    glViewport(0, 0, (GLsizei)io.DisplaySize.x, (GLsizei)io.DisplaySize.y);
+    ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
 }
 
 void renderScene(void) {
-  // Clear the screen.
-  glClear(GL_COLOR_BUFFER_BIT);
+    // Clear the screen.
+    glClear(GL_COLOR_BUFFER_BIT);
 
-  robo.Desenha();
+    Utils::getIDs();
 
-  if (tiro)
-    tiro->Desenha();
+    robo.Desenha();
 
-  alvo.Desenha();
+    if (tiro)
+        tiro->Desenha();
 
-  drawUI();
+    alvo.Desenha();
 
-  glutSwapBuffers(); // Desenha the new frame of the game.
-  glutPostRedisplay();
+    drawUI();
+
+    glutSwapBuffers(); // Desenha the new frame of the game.
+    glutPostRedisplay();
 }
 
 void keyPress(unsigned char key, int x, int y) {
-  switch (key) {
-  case '1':
-    animate = !animate;
-    break;
-  case 'a':
-  case 'A':
-    keyStatus[(int)('a')] = 1; // Using keyStatus trick
-    break;
-  case 'd':
-  case 'D':
-    keyStatus[(int)('d')] = 1; // Using keyStatus trick
-    break;
-  case 'f':
-  case 'F':
-    robo.RodaBraco1(-INC_KEY); // Without keyStatus trick
-    break;
-  case 'r':
-  case 'R':
-    robo.RodaBraco1(+INC_KEY); // Without keyStatus trick
-    break;
-  case 'g':
-  case 'G':
-    robo.RodaBraco2(-INC_KEY); // Without keyStatus trick
-    break;
-  case 't':
-  case 'T':
-    robo.RodaBraco2(+INC_KEY); // Without keyStatus trick
-    break;
-  case 'h':
-  case 'H':
-    robo.RodaBraco3(-INC_KEY); // Without keyStatus trick
-    break;
-  case 'y':
-  case 'Y':
-    robo.RodaBraco3(+INC_KEY); // Without keyStatus trick
-    break;
-  case ' ':
-    if (!tiro)
-      tiro = robo.Atira();
-    break;
-  case 27:
-    exit(0);
-  }
-  glutPostRedisplay();
-  ImGui_ImplGLUT_KeyboardFunc(key, x, y);
+    switch (key) {
+    case '1':
+        animate = !animate;
+        break;
+    case 'a':
+    case 'A':
+        keyStatus[(int)('a')] = 1; // Using keyStatus trick
+        break;
+    case 'd':
+    case 'D':
+        keyStatus[(int)('d')] = 1; // Using keyStatus trick
+        break;
+    case 'f':
+    case 'F':
+        robo.RodaBraco1(-INC_KEY); // Without keyStatus trick
+        break;
+    case 'r':
+    case 'R':
+        robo.RodaBraco1(+INC_KEY); // Without keyStatus trick
+        break;
+    case 'g':
+    case 'G':
+        robo.RodaBraco2(-INC_KEY); // Without keyStatus trick
+        break;
+    case 't':
+    case 'T':
+        robo.RodaBraco2(+INC_KEY); // Without keyStatus trick
+        break;
+    case 'h':
+    case 'H':
+        robo.RodaBraco3(-INC_KEY); // Without keyStatus trick
+        break;
+    case 'y':
+    case 'Y':
+        robo.RodaBraco3(+INC_KEY); // Without keyStatus trick
+        break;
+    case ' ':
+        if (!tiro)
+            tiro = robo.Atira();
+        break;
+    case 27:
+        exit(0);
+    }
+    glutPostRedisplay();
+    ImGui_ImplGLUT_KeyboardFunc(key, x, y);
 }
 
 void keyup(unsigned char key, int x, int y) {
-  keyStatus[(int)(key)] = 0;
-  glutPostRedisplay();
-  ImGui_ImplGLUT_KeyboardUpFunc(key, x, y);
+    keyStatus[(int)(key)] = 0;
+    glutPostRedisplay();
+    ImGui_ImplGLUT_KeyboardUpFunc(key, x, y);
 }
 
 void ResetKeyStatus() {
-  int i;
-  // Initialize keyStatus
-  for (i = 0; i < 256; i++)
-    keyStatus[i] = 0;
+    int i;
+    // Initialize keyStatus
+    for (i = 0; i < 256; i++)
+        keyStatus[i] = 0;
 }
 
 void init(void) {
-  ResetKeyStatus();
-  // The color the windows will redraw. Its done to erase the previous frame.
-  glClearColor(0.0f, 0.0f, 0.0f, 1.0f); // Black, no opacity(alpha).
+    ResetKeyStatus();
+    // The color the windows will redraw. Its done to erase the previous frame.
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f); // Black, no opacity(alpha).
 
-  glMatrixMode(GL_PROJECTION);  // Select the projection matrix
-  glOrtho(-(ViewingWidth / 2),  // X coordinate of left edge
-          (ViewingWidth / 2),   // X coordinate of right edge
-          -(ViewingHeight / 2), // Y coordinate of bottom edge
-          (ViewingHeight / 2),  // Y coordinate of top edge
-          -100,                 // Z coordinate of the “near” plane
-          100);                 // Z coordinate of the “far” plane
-  glMatrixMode(GL_MODELVIEW);   // Select the projection matrix
-  glLoadIdentity();
+    glMatrixMode(GL_PROJECTION);  // Select the projection matrix
+    glOrtho(-(ViewingWidth / 2),  // X coordinate of left edge
+            (ViewingWidth / 2),   // X coordinate of right edge
+            -(ViewingHeight / 2), // Y coordinate of bottom edge
+            (ViewingHeight / 2),  // Y coordinate of top edge
+            -100,                 // Z coordinate of the “near” plane
+            100);                 // Z coordinate of the “far” plane
+    glMatrixMode(GL_MODELVIEW);   // Select the projection matrix
+    glLoadIdentity();
 }
 
 void idle(void) {
-  double inc = INC_KEYIDLE;
-  // Treat keyPress
-  if (keyStatus[(int)('a')]) {
-    robo.MoveEmX(-inc);
-  }
-  if (keyStatus[(int)('d')]) {
-    robo.MoveEmX(inc);
-  }
-
-  // Trata o tiro (soh permite um tiro por vez)
-  // Poderia usar uma lista para tratar varios tiros
-  if (tiro) {
-    tiro->Move();
-
-    // Trata colisao
-    if (alvo.Atingido(tiro)) {
-      alvo.Recria(rand() % 500 - 250, 200);
+    double inc = INC_KEYIDLE;
+    // Treat keyPress
+    if (keyStatus[(int)('a')]) {
+        robo.MoveEmX(-inc);
+    }
+    if (keyStatus[(int)('d')]) {
+        robo.MoveEmX(inc);
     }
 
-    if (!tiro->Valido()) {
-      delete tiro;
-      tiro = NULL;
-    }
-  }
+    // Trata o tiro (soh permite um tiro por vez)
+    // Poderia usar uma lista para tratar varios tiros
+    if (tiro) {
+        tiro->Move();
 
-  // Control animation
-  if (animate) {
-    static int dir = 1;
-    if (robo.ObtemX() > (ViewingWidth / 2)) {
-      dir *= -1;
-    } else if (robo.ObtemX() < -(ViewingWidth / 2)) {
-      dir *= -1;
-    }
-    robo.MoveEmX(dir * INC_KEYIDLE);
-  }
+        // Trata colisao
+        if (alvo.Atingido(tiro)) {
+            alvo.Recria(rand() % 500 - 250, 200);
+        }
 
-  glutPostRedisplay();
+        if (!tiro->Valido()) {
+            delete tiro;
+            tiro = NULL;
+        }
+    }
+
+    // Control animation
+    if (animate) {
+        static int dir = 1;
+        if (robo.ObtemX() > (ViewingWidth / 2)) {
+            dir *= -1;
+        } else if (robo.ObtemX() < -(ViewingWidth / 2)) {
+            dir *= -1;
+        }
+        robo.MoveEmX(dir * INC_KEYIDLE);
+    }
+
+    glutPostRedisplay();
 }
 
 void imgui_init() {
-  IMGUI_CHECKVERSION();
-  ImGui::CreateContext();
-  ImGuiIO &io = ImGui::GetIO();
-  (void)io;
-  ImGui::StyleColorsDark();
-  ImGui_ImplGLUT_Init();
-  ImGui_ImplGLUT_InstallFuncs();
-  ImGui_ImplOpenGL2_Init();
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO();
+    (void)io;
+    ImGui::StyleColorsDark();
+    ImGui_ImplGLUT_Init();
+    ImGui_ImplGLUT_InstallFuncs();
+    ImGui_ImplOpenGL2_Init();
 }
 
-int main(int argc, char *argv[]) {
-  // Initialize openGL with Double buffer and RGB color without transparency.
-  // Its interesting to try GLUT_SINGLE instead of GLUT_DOUBLE.
-  glutInit(&argc, argv);
-  glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
+int main(int argc, char* argv[]) {
+    // Initialize openGL with Double buffer and RGB color without transparency.
+    // Its interesting to try GLUT_SINGLE instead of GLUT_DOUBLE.
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
 
-  // Create the window.
-  glutInitWindowSize(Width, Height);
-  glutInitWindowPosition(150, 50);
-  glutCreateWindow("Tranformations 2D");
+    // Create the window.
+    glutInitWindowSize(Width, Height);
+    glutInitWindowPosition(150, 50);
+    glutCreateWindow("Tranformations 2D");
 
-  init();
-  imgui_init();
+    init();
+    imgui_init();
 
-  // Define callbacks.
-  glutDisplayFunc(renderScene);
-  glutKeyboardFunc(keyPress);
-  glutIdleFunc(idle);
-  glutKeyboardUpFunc(keyup);
+    // Define callbacks.
+    glutDisplayFunc(renderScene);
+    glutKeyboardFunc(keyPress);
+    glutIdleFunc(idle);
+    glutKeyboardUpFunc(keyup);
 
-  glutMainLoop();
+    glutMainLoop();
 
-  return 0;
+    return 0;
 }

@@ -39,7 +39,7 @@ build:
 clean:
 	$(RM) $(BUILD_DIR) -rf
 
-robotDeps: build/robo.o build/alvo.o build/tiro.o build/main.o
+robotDeps: build/robo.o build/alvo.o build/tiro.o build/main.o build/utils.o
 
 $(BUILD_DIR)/robo.o: src/robo.cpp | build
 	$(CXX) $(CFLAGS) -o $@ -c $<
@@ -51,4 +51,7 @@ $(BUILD_DIR)/tiro.o: src/tiro.cpp | build
 	$(CXX) $(CFLAGS) -o $@ -c $<
 
 $(BUILD_DIR)/main.o: src/main.cpp | build
+	$(CXX) $(CFLAGS) -o $@ -c $<
+
+$(BUILD_DIR)/utils.o: src/utils.cpp | build
 	$(CXX) $(CFLAGS) -o $@ -c $<
