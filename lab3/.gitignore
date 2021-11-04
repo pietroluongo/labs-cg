@@ -3,3 +3,6 @@ build
 
 # Binário gerado
 robotGame
+
+# Arquivo de configuração imgui
+imgui.ini

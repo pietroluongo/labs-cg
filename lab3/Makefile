@@ -1,3 +1,4 @@
+.DEFAULT_GOAL := all
 # the compiler: gcc for C program, define as g++ for C++
 CC = gcc
 CXX = g++
@@ -8,13 +9,21 @@ IMGUI_DIR = ../libs/imgui
 # compiler flags:
 #  -g    adds debugging information to the executable file
 #  -Wall turns on most, but not all, compiler warnings
-CFLAGS  = -g -Wall
+CFLAGS  = -g -Wall -std=c++11
 LINKING = -lglut -lGL -lGLU
 
 IMGUI_SOURCES_DIRTY := $(wildcard $(IMGUI_DIR)/*.cpp)
 IMGUI_SOURCES_NO_PREFIX := $(subst $(IMGUI_DIR)/,,$(IMGUI_SOURCES_DIRTY))
 IMGUI_SOURCES := $(IMGUI_SOURCES_NO_PREFIX:.cpp=)
 IMGUI_OBJS := $(IMGUI_SOURCES:%=$(BUILD_DIR)/imgui/%.o)
+
+robotGame: robotDeps imgui
+	$(CXX) $(CFLAGS) -o $@ $(BUILD_DIR)/*.o $(BUILD_DIR)/imgui/*.o $(LINKING)
+
+run: robotGame
+	./robotGame
+
+all: imgui robotGame
 
 imgui: $(IMGUI_OBJS)
 
@@ -29,9 +38,6 @@ build:
 
 clean:
 	$(RM) $(BUILD_DIR) -rf
-
-robotGame: robotDeps imgui
-	$(CXX) $(CFLAGS) -o $@ $(BUILD_DIR)/*.o $(BUILD_DIR)/imgui/*.o $(LINKING)
 
 robotDeps: build/robo.o build/alvo.o build/tiro.o build/main.o
 

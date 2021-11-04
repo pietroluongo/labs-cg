@@ -1,3 +1,6 @@
+#include "../../libs/imgui/imgui.h"
+#include "../../libs/imgui/imgui_impl_glut.h"
+#include "../../libs/imgui/imgui_impl_opengl2.h"
 #include "../include/alvo.h"
 #include "../include/robo.h"
 #include <GL/gl.h>
@@ -29,6 +32,26 @@ Robo robo;         // Um rodo
 Tiro *tiro = NULL; // Um tiro por vez
 Alvo alvo(0, 200); // Um alvo por vez
 
+void imgui_display() {
+  {
+    ImGui::Begin("Robo");
+    ImGui::Text("Posicao: %f, %f", robo.ObtemX(), robo.ObtemY());
+    ImGui::End();
+  }
+}
+
+void drawUI() {
+  ImGui_ImplOpenGL2_NewFrame();
+  ImGui_ImplGLUT_NewFrame();
+
+  imgui_display();
+
+  ImGui::Render();
+  ImGuiIO &io = ImGui::GetIO();
+  glViewport(0, 0, (GLsizei)io.DisplaySize.x, (GLsizei)io.DisplaySize.y);
+  ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
+}
+
 void renderScene(void) {
   // Clear the screen.
   glClear(GL_COLOR_BUFFER_BIT);
@@ -40,7 +63,10 @@ void renderScene(void) {
 
   alvo.Desenha();
 
+  drawUI();
+
   glutSwapBuffers(); // Desenha the new frame of the game.
+  glutPostRedisplay();
 }
 
 void keyPress(unsigned char key, int x, int y) {
@@ -88,11 +114,13 @@ void keyPress(unsigned char key, int x, int y) {
     exit(0);
   }
   glutPostRedisplay();
+  ImGui_ImplGLUT_KeyboardFunc(key, x, y);
 }
 
 void keyup(unsigned char key, int x, int y) {
   keyStatus[(int)(key)] = 0;
   glutPostRedisplay();
+  ImGui_ImplGLUT_KeyboardUpFunc(key, x, y);
 }
 
 void ResetKeyStatus() {
@@ -158,6 +186,17 @@ void idle(void) {
   glutPostRedisplay();
 }
 
+void imgui_init() {
+  IMGUI_CHECKVERSION();
+  ImGui::CreateContext();
+  ImGuiIO &io = ImGui::GetIO();
+  (void)io;
+  ImGui::StyleColorsDark();
+  ImGui_ImplGLUT_Init();
+  ImGui_ImplGLUT_InstallFuncs();
+  ImGui_ImplOpenGL2_Init();
+}
+
 int main(int argc, char *argv[]) {
   // Initialize openGL with Double buffer and RGB color without transparency.
   // Its interesting to try GLUT_SINGLE instead of GLUT_DOUBLE.
@@ -169,13 +208,14 @@ int main(int argc, char *argv[]) {
   glutInitWindowPosition(150, 50);
   glutCreateWindow("Tranformations 2D");
 
+  init();
+  imgui_init();
+
   // Define callbacks.
   glutDisplayFunc(renderScene);
   glutKeyboardFunc(keyPress);
   glutIdleFunc(idle);
   glutKeyboardUpFunc(keyup);
-
-  init();
 
   glutMainLoop();
 
