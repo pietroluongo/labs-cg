@@ -47,6 +47,14 @@ void imgui_display() {
         ImGui::EndDisabled();
         ImGui::SliderFloat("t", &t, 0, 1);
         ImGui::Checkbox("Draw polyline", &shouldDrawPolyline);
+        if (ImGui::CollapsingHeader("Polyline Equation")) {
+            ImGui::Text("\tI(t) = (1-t)P + tQ\n\tI(%.3f) = (%.3f)P + %.3fQ", t,
+                        (1 - t), t);
+            ImGui::Text("\tx(%.3f) = %.3f * %.3f + %.3f * %.3f", t, (1 - t),
+                        points[0][0], t, points[1][0]);
+            ImGui::Text("\ty(%.3f) = %.3f * %.3f + %.3f * %.3f", t, (1 - t),
+                        points[0][1], t, points[1][1]);
+        }
         ImGui::End();
     }
 }
