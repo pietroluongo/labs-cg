@@ -1,3 +1,4 @@
+#include "../libs/glm/glm.hpp"
 #include "../libs/imgui/imgui.h"
 #include "../libs/imgui/imgui_impl_glut.h"
 #include "../libs/imgui/imgui_impl_opengl2.h"
@@ -8,25 +9,26 @@
 #include <stdio.h>
 #define TAMANHO_JANELA 500
 
+typedef glm::vec2 vec2;
+typedef glm::vec3 vec3;
+
 // Pontos do triangulo
-static float pRx = 0.1;
-static float pRy = 0.1;
-static float pGx = 0.9;
-static float pGy = 0.1;
-static float pBx = 0.5;
-static float pBy = 0.9;
+static vec2 pR = vec2(0.1f, 0.1f);
+static vec2 pG = vec2(0.9f, 0.1f);
+static vec2 pB = vec2(0.5f, 0.9f);
 
 // Controle dos arrastes
 static int draggingPointR = 0, draggingPointG = 0, draggingPointB = 0,
            choosingColor = 0;
 
 // Cor
-static float gR = 0., gG = 0., gB = 0.;
+static vec3 bg = vec3(0., 0., 0.);
 
 // Ponto do clique da cor
-static float pCliqueX = 0, pCliqueY = 0;
+static vec2 pClique = vec2(0., 0.);
+
 // Pronto do clique projetado
-static float pProjX = 0, pProjY = 0;
+static vec2 pProj = vec2(0., 0.);
 
 static bool imgui_showDebug = false;
 static bool imgui_mouse = false;
@@ -41,9 +43,10 @@ void drawUI();
  * @param p2 Second point of the first line
  * @param p3 First point of the second line
  * @param p4 Second point of the second line
- * @return GLfloat* Array with coordinates from intersection point
+ * @return vec2* Array with coordinates from intersection point
  */
-GLfloat* intersection(GLfloat* p1, GLfloat* p2, GLfloat* p3, GLfloat* p4);
+vec2* intersection(const vec2& p1, const vec2& p2, const vec2& p3,
+                   const vec2& p4);
 
 void imgui_display() {
     if (imgui_showDebug) {
@@ -53,14 +56,14 @@ void imgui_display() {
         ImGui::EndDisabled();
         {
             ImGui::BeginDisabled(true);
-            float pClique[2] = {pCliqueX, pCliqueY};
-            ImGui::SliderFloat2("pClique", pClique, 0, 1);
+            float clique[2] = {pClique.x, pClique.y};
+            ImGui::SliderFloat2("pClique", clique, 0, 1);
             ImGui::EndDisabled();
         }
         {
             ImGui::BeginDisabled(true);
-            float pProj[2] = {pProjX, pProjY};
-            ImGui::SliderFloat2("pProj", pProj, 0, 1);
+            float proj[2] = {pProj.x, pProj.y};
+            ImGui::SliderFloat2("pProj", proj, 0, 1);
             ImGui::EndDisabled();
         }
         ImGui::End();
@@ -70,7 +73,7 @@ void imgui_display() {
 
 void display(void) {
     // Define a cor do fundo
-    glClearColor(gR, gG, gB, 0.0);
+    glClearColor(bg.r, bg.g, bg.b, 0.0);
 
     /* Limpar todos os pixels  */
     glClear(GL_COLOR_BUFFER_BIT);
@@ -79,25 +82,25 @@ void display(void) {
     /* Desenhar um polígono branco (retângulo) */
     glBegin(GL_POLYGON);
     glColor3f(1.0, 0.0, 0.0);
-    glVertex3f(pRx, pRy, 0.0);
+    glVertex3f(pR.x, pR.y, 0.0);
     glColor3f(0.0, 1.0, 0.0);
-    glVertex3f(pGx, pGy, 0.0);
+    glVertex3f(pG.x, pG.y, 0.0);
     glColor3f(0.0, 0.0, 1.0);
-    glVertex3f(pBx, pBy, 0.0);
+    glVertex3f(pB.x, pB.y, 0.0);
     glEnd();
 
     /* Desenha o ponto de clique. */
     glPointSize(5.0);
     glColor3f(1.0, 1.0, 0.0);
     glBegin(GL_POINTS);
-    glVertex3f(pCliqueX, pCliqueY, 0.0);
+    glVertex3f(pClique.x, pClique.y, 0.0);
     glEnd();
 
     /* Desenha o ponto projetado. */
     glPointSize(5.0);
     glColor3f(1.0, 1.0, 1.0);
     glBegin(GL_POINTS);
-    glVertex3f(pProjX, pProjY, 0.0);
+    glVertex3f(pProj.x, pProj.y, 0.0);
     glEnd();
 
     drawUI();
@@ -124,30 +127,27 @@ void motion(int x, int y) {
 
     if (choosingColor) {
         // Atualiza posicao do clique
-        pCliqueX = fX;
-        pCliqueY = fY;
+        pClique.x = fX;
+        pClique.y = fY;
 
         /**
                 COLOQUE SEU CODIGO AQUI
         **/
-        GLfloat p1[2] = {pRx, pRy};
-        GLfloat p2[2] = {pGx, pGy};
-        GLfloat p3[2] = {pCliqueX, pCliqueY};
-        GLfloat p4[2] = {pBx, pBy};
-        GLfloat* inter = intersection(p1, p2, p3, p4);
-        pProjX = inter[0];
-        pProjY = inter[1];
+        // GLfloat p3[2] = {pCliqueX, pCliqueY};
+        vec2* inter = intersection(pR, pG, pB, pClique);
+        pProj.x = inter->x;
+        pProj.y = inter->y;
         free(inter);
 
     } else if (draggingPointR) {
-        pRx = (GLfloat)x / TAMANHO_JANELA;
-        pRy = (GLfloat)y / TAMANHO_JANELA;
+        pR.x = (GLfloat)x / TAMANHO_JANELA;
+        pR.y = (GLfloat)y / TAMANHO_JANELA;
     } else if (draggingPointG) {
-        pGx = (GLfloat)x / TAMANHO_JANELA;
-        pGy = (GLfloat)y / TAMANHO_JANELA;
+        pG.x = (GLfloat)x / TAMANHO_JANELA;
+        pG.y = (GLfloat)y / TAMANHO_JANELA;
     } else if (draggingPointB) {
-        pBx = (GLfloat)x / TAMANHO_JANELA;
-        pBy = (GLfloat)y / TAMANHO_JANELA;
+        pB.x = (GLfloat)x / TAMANHO_JANELA;
+        pB.y = (GLfloat)y / TAMANHO_JANELA;
     }
 
     glutPostRedisplay();
@@ -166,13 +166,13 @@ void mouse(int button, int state, int x, int y) {
     if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
         choosingColor = 1;
     } else if (button == GLUT_RIGHT_BUTTON && state == GLUT_DOWN) {
-        if ((pRx - fX) * (pRx - fX) + (pRy - fY) * (pRy - fY) <
+        if ((pR.x - fX) * (pR.x - fX) + (pR.y - fY) * (pR.y - fY) <
             (30.0 / TAMANHO_JANELA) * (30.0 / TAMANHO_JANELA)) {
             draggingPointR = 1;
-        } else if ((pGx - fX) * (pGx - fX) + (pGy - fY) * (pGy - fY) <
+        } else if ((pG.x - fX) * (pG.x - fX) + (pG.y - fY) * (pG.y - fY) <
                    (30.0 / TAMANHO_JANELA) * (30.0 / TAMANHO_JANELA)) {
             draggingPointG = 1;
-        } else if ((pBx - fX) * (pBx - fX) + (pBy - fY) * (pBy - fY) <
+        } else if ((pB.x - fX) * (pB.x - fX) + (pB.y - fY) * (pB.y - fY) <
                    (30.0 / TAMANHO_JANELA) * (30.0 / TAMANHO_JANELA)) {
             draggingPointB = 1;
         }
@@ -240,13 +240,15 @@ void drawUI() {
     ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
 }
 
-GLfloat* intersection(GLfloat* p1, GLfloat* p2, GLfloat* p3, GLfloat* p4) {
-    GLfloat* p = (GLfloat*)malloc(sizeof(GLfloat) * 2);
+vec2* intersection(const vec2& p1, const vec2& p2, const vec2& p3,
+                   const vec2& p4) {
     GLfloat m1 = (p2[1] - p1[1]) / (p2[0] - p1[0]);
     GLfloat m2 = (p4[1] - p3[1]) / (p4[0] - p3[0]);
     GLfloat b1 = p1[1] - m1 * p1[0];
     GLfloat b2 = p3[1] - m2 * p3[0];
-    p[0] = (b2 - b1) / (m1 - m2);
-    p[1] = m1 * p[0] + b1;
-    return p;
+
+    GLfloat q0 = (b2 - b1) / (m1 - m2);
+    GLfloat q1 = m1 * q0 + b1;
+    vec2* q = new vec2(q0, q1);
+    return q;
 }
