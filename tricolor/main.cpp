@@ -32,6 +32,8 @@ static vec2 pClique = vec2(0., 0.);
 // Pronto do clique projetado
 static vec2 pProj = vec2(0., 0.);
 
+static vec3 colorDists = vec3(0., 0., 0.);
+
 static bool imgui_showDebug = false;
 static bool imgui_mouse = false;
 
@@ -49,6 +51,8 @@ void drawUI();
  */
 vec2* intersection(const vec2& p1, const vec2& p2, const vec2& p3,
                    const vec2& p4);
+
+float interpBetweenToRGB(float val, float minOrig, float maxOrig);
 
 void imgui_display() {
     if (imgui_showDebug) {
@@ -71,6 +75,11 @@ void imgui_display() {
             ImGui::ColorEdit3("bg", (float*)&bg);
             ImGui::EndDisabled();
         }
+        {
+            ImGui::BeginDisabled(true);
+            ImGui::SliderFloat3("colorDists", (float*)&colorDists, 0, 1);
+            ImGui::EndDisabled();
+        }
         ImGui::End();
     }
     glutPostRedisplay();
@@ -83,7 +92,8 @@ void display(void) {
     /* Limpar todos os pixels  */
     glClear(GL_COLOR_BUFFER_BIT);
 
-    /* Define cor dos vértices com os valores R, G e B variando de 0.0 a 1.0 */
+    /* Define cor dos vértices com os valores R, G e B variando de 0.0 a 1.0
+     */
     /* Desenhar um polígono branco (retângulo) */
     glBegin(GL_POLYGON);
     glColor3f(1.0, 0.0, 0.0);
@@ -138,11 +148,19 @@ void motion(int x, int y) {
         /**
                 COLOQUE SEU CODIGO AQUI
         **/
-        // GLfloat p3[2] = {pCliqueX, pCliqueY};
         vec2* inter = intersection(pR, pG, pB, pClique);
         pProj.x = inter->x;
         pProj.y = inter->y;
         free(inter);
+        colorDists.r =
+            1 - glm::clamp<float>(glm::distance(pR, pProj), 0.0, 0.8);
+        colorDists.g =
+            1 - glm::clamp<float>(glm::distance(pG, pProj), 0.0, 0.8);
+        colorDists.b =
+            1 - glm::clamp<float>(glm::distance(pB, pProj), 0.0, 0.8);
+        bg.r = interpBetweenToRGB(colorDists.r, 0.2, 1.0);
+        bg.g = interpBetweenToRGB(colorDists.g, 0.2, 1.0);
+        bg.b = interpBetweenToRGB(colorDists.b, 0.2, 1.0);
 
     } else if (draggingPoint.r) {
         pR.x = (GLfloat)x / TAMANHO_JANELA;
@@ -256,4 +274,8 @@ vec2* intersection(const vec2& p1, const vec2& p2, const vec2& p3,
     GLfloat q1 = m1 * q0 + b1;
     vec2* q = new vec2(q0, q1);
     return q;
+}
+
+float interpBetweenToRGB(float val, float minOrig, float maxOrig) {
+    return (val - minOrig) * (1) / (maxOrig - minOrig);
 }
