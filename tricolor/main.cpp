@@ -1,6 +1,7 @@
 #include "../libs/imgui/imgui.h"
 #include "../libs/imgui/imgui_impl_glut.h"
 #include "../libs/imgui/imgui_impl_opengl2.h"
+
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <GL/glut.h>
@@ -33,6 +34,16 @@ static bool imgui_mouse = false;
 void imgui_init();
 void imgui_display();
 void drawUI();
+/**
+ * @brief Gets instersection between two lines defined by two points
+ *
+ * @param p1 First point of the first line
+ * @param p2 Second point of the first line
+ * @param p3 First point of the second line
+ * @param p4 Second point of the second line
+ * @return GLfloat* Array with coordinates from intersection point
+ */
+GLfloat* intersection(GLfloat* p1, GLfloat* p2, GLfloat* p3, GLfloat* p4);
 
 void imgui_display() {
     if (imgui_showDebug) {
@@ -119,6 +130,14 @@ void motion(int x, int y) {
         /**
                 COLOQUE SEU CODIGO AQUI
         **/
+        GLfloat p1[2] = {pRx, pRy};
+        GLfloat p2[2] = {pGx, pGy};
+        GLfloat p3[2] = {pCliqueX, pCliqueY};
+        GLfloat p4[2] = {pBx, pBy};
+        GLfloat* inter = intersection(p1, p2, p3, p4);
+        pProjX = inter[0];
+        pProjY = inter[1];
+        free(inter);
 
     } else if (draggingPointR) {
         pRx = (GLfloat)x / TAMANHO_JANELA;
@@ -219,4 +238,15 @@ void drawUI() {
     ImGuiIO& io = ImGui::GetIO();
     glViewport(0, 0, (GLsizei)io.DisplaySize.x, (GLsizei)io.DisplaySize.y);
     ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
+}
+
+GLfloat* intersection(GLfloat* p1, GLfloat* p2, GLfloat* p3, GLfloat* p4) {
+    GLfloat* p = (GLfloat*)malloc(sizeof(GLfloat) * 2);
+    GLfloat m1 = (p2[1] - p1[1]) / (p2[0] - p1[0]);
+    GLfloat m2 = (p4[1] - p3[1]) / (p4[0] - p3[0]);
+    GLfloat b1 = p1[1] - m1 * p1[0];
+    GLfloat b2 = p3[1] - m2 * p3[0];
+    p[0] = (b2 - b1) / (m1 - m2);
+    p[1] = m1 * p[0] + b1;
+    return p;
 }
