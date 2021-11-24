@@ -11,6 +11,7 @@
 
 typedef glm::vec2 vec2;
 typedef glm::vec3 vec3;
+typedef glm::ivec3 ivec3;
 
 // Pontos do triangulo
 static vec2 pR = vec2(0.1f, 0.1f);
@@ -18,8 +19,9 @@ static vec2 pG = vec2(0.9f, 0.1f);
 static vec2 pB = vec2(0.5f, 0.9f);
 
 // Controle dos arrastes
-static int draggingPointR = 0, draggingPointG = 0, draggingPointB = 0,
-           choosingColor = 0;
+static int choosingColor = 0;
+
+static ivec3 draggingPoint = ivec3(0, 0, 0);
 
 // Cor
 static vec3 bg = vec3(0., 0., 0.);
@@ -56,14 +58,17 @@ void imgui_display() {
         ImGui::EndDisabled();
         {
             ImGui::BeginDisabled(true);
-            float clique[2] = {pClique.x, pClique.y};
-            ImGui::SliderFloat2("pClique", clique, 0, 1);
+            ImGui::SliderFloat2("pClique", (float*)&pClique, 0, 1);
             ImGui::EndDisabled();
         }
         {
             ImGui::BeginDisabled(true);
-            float proj[2] = {pProj.x, pProj.y};
-            ImGui::SliderFloat2("pProj", proj, 0, 1);
+            ImGui::SliderFloat2("pProj", (float*)&pProj, 0, 1);
+            ImGui::EndDisabled();
+        }
+        {
+            ImGui::BeginDisabled(true);
+            ImGui::ColorEdit3("bg", (float*)&bg);
             ImGui::EndDisabled();
         }
         ImGui::End();
@@ -139,13 +144,13 @@ void motion(int x, int y) {
         pProj.y = inter->y;
         free(inter);
 
-    } else if (draggingPointR) {
+    } else if (draggingPoint.r) {
         pR.x = (GLfloat)x / TAMANHO_JANELA;
         pR.y = (GLfloat)y / TAMANHO_JANELA;
-    } else if (draggingPointG) {
+    } else if (draggingPoint.g) {
         pG.x = (GLfloat)x / TAMANHO_JANELA;
         pG.y = (GLfloat)y / TAMANHO_JANELA;
-    } else if (draggingPointB) {
+    } else if (draggingPoint.b) {
         pB.x = (GLfloat)x / TAMANHO_JANELA;
         pB.y = (GLfloat)y / TAMANHO_JANELA;
     }
@@ -168,19 +173,19 @@ void mouse(int button, int state, int x, int y) {
     } else if (button == GLUT_RIGHT_BUTTON && state == GLUT_DOWN) {
         if ((pR.x - fX) * (pR.x - fX) + (pR.y - fY) * (pR.y - fY) <
             (30.0 / TAMANHO_JANELA) * (30.0 / TAMANHO_JANELA)) {
-            draggingPointR = 1;
+            draggingPoint.r = 1;
         } else if ((pG.x - fX) * (pG.x - fX) + (pG.y - fY) * (pG.y - fY) <
                    (30.0 / TAMANHO_JANELA) * (30.0 / TAMANHO_JANELA)) {
-            draggingPointG = 1;
+            draggingPoint.g = 1;
         } else if ((pB.x - fX) * (pB.x - fX) + (pB.y - fY) * (pB.y - fY) <
                    (30.0 / TAMANHO_JANELA) * (30.0 / TAMANHO_JANELA)) {
-            draggingPointB = 1;
+            draggingPoint.b = 1;
         }
 
     } else if (button == GLUT_LEFT_BUTTON && state == GLUT_UP) {
         choosingColor = 0;
     } else if (button == GLUT_RIGHT_BUTTON && state == GLUT_UP) {
-        draggingPointR = draggingPointG = draggingPointB = 0;
+        draggingPoint.r = draggingPoint.g = draggingPoint.b = 0;
     }
     motion(x, y);
 }
