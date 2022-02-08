@@ -3,7 +3,7 @@ CC = gcc
 CXX = g++
 
 BUILD_DIR = build
-IMGUI_DIR = ../libs/imgui
+IMGUI_DIR = ../../libs/imgui
 
 # compiler flags:
 #  -g    adds debugging information to the executable file
@@ -21,8 +21,8 @@ all: lightToroide
 $(BUILD_DIR)/imgui/%.o: $(IMGUI_DIR)/%.cpp | build_imgui
 	$(CXX) $(CFLAGS) -o $@ -c $< 
 
-lightToroide: lightToroide.cpp build
-	$(CXX) $(CFLAGS) -o lightToroide lightToroide.cpp $(LINKING)
+lightToroide: imgui lightToroide.cpp build
+	$(CXX) $(CFLAGS) -o lightToroide lightToroide.cpp build/imgui/*.o $(LINKING)
 
 run: lightToroide build
 	./lightToroide
