@@ -3,7 +3,7 @@ CC = gcc
 CXX = g++
 
 BUILD_DIR = build
-IMGUI_DIR = ../libs/imgui
+IMGUI_DIR = ../../libs/imgui
 
 # compiler flags:
 #  -g    adds debugging information to the executable file
@@ -21,11 +21,13 @@ all: 3d
 $(BUILD_DIR)/imgui/%.o: $(IMGUI_DIR)/%.cpp | build_imgui
 	$(CXX) $(CFLAGS) -o $@ -c $< 
 
-3d: opengl3d.cpp build
-	$(CXX) $(CFLAGS) -o 3d opengl3d.cpp $(LINKING)
+3d: opengl3d.cpp imgui build
+	$(CXX) $(CFLAGS) -o 3d opengl3d.cpp build/imgui/*.o $(LINKING)
 
 run: 3d build
 	./3d
+
+remake: clean all
 
 build_imgui: build
 	mkdir build/imgui -p
