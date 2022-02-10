@@ -1,6 +1,11 @@
 # the compiler: gcc for C program, define as g++ for C++
 CC = gcc
+
+ifeq ($(ARCH), WIN)
+CXX = x86_64-w64-mingw32-g++
+else
 CXX = g++
+endif
 
 BUILD_DIR = build
 IMGUI_DIR = ../libs/imgui
@@ -8,8 +13,12 @@ IMGUI_DIR = ../libs/imgui
 # compiler flags:
 #  -g    adds debugging information to the executable file
 #  -Wall turns on most, but not all, compiler warnings
-CFLAGS  = -g -Wall
+CFLAGS  = -g -Wall $(LINKING)
+ifeq ($(ARCH), WIN)
+LINKING=-static -lfreeglut -lopengl32 -lglu32 -Wl,--subsystem,windows -I../libs/win/freeglut/include -L../libs/win/freeglut/lib/x64
+else
 LINKING = -lglut -lGL -lGLU
+endif
 
 IMGUI_SOURCES_DIRTY := $(wildcard $(IMGUI_DIR)/*.cpp)
 IMGUI_SOURCES_NO_PREFIX := $(subst $(IMGUI_DIR)/,,$(IMGUI_SOURCES_DIRTY))
