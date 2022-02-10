@@ -3,7 +3,7 @@ CC = gcc
 CXX = g++
 
 BUILD_DIR = build
-IMGUI_DIR = ../libs/imgui
+IMGUI_DIR = ../../libs/imgui
 
 # compiler flags:
 #  -g    adds debugging information to the executable file
@@ -21,8 +21,8 @@ all: soldier
 $(BUILD_DIR)/imgui/%.o: $(IMGUI_DIR)/%.cpp | build_imgui
 	$(CXX) $(CFLAGS) -o $@ -c $< 
 
-soldier: soldado.cpp build/objloader.o | build
-	$(CXX) $(CFLAGS) -o soldier soldado.cpp build/objloader.o $(LINKING)
+soldier: soldado.cpp build/objloader.o imgui | build
+	$(CXX) $(CFLAGS) -o soldier soldado.cpp build/objloader.o build/imgui/*.o $(LINKING)
 
 run: soldier
 	./soldier
