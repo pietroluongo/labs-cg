@@ -81,18 +81,23 @@ void reshape(int w, int h) {
 }
 
 // Funcao auxiliar para normalizar um vetor a/|a|
-void normalize(float a[3]) {
-    double norm = sqrt(a[0] * a[0] + a[1] * a[1] + a[2] * a[2]);
+void normalize(float a[3])
+{
+    double norm = sqrt(a[0]*a[0]+a[1]*a[1]+a[2]*a[2]);
     a[0] /= norm;
     a[1] /= norm;
     a[2] /= norm;
 }
-
 // Funcao auxiliar para fazer o produto vetorial entre dois vetores a x b = out
-void cross(float a[3], float b[3], float out[3]) {
-    out[0] = a[1] * b[2] - a[2] * b[1];
-    out[1] = a[2] * b[0] - a[0] * b[2];
-    out[2] = a[0] * b[1] - a[1] * b[0];
+void cross(float a[3], float b[3], float out[3])
+{
+    out[0] = a[1]*b[2] - a[2]*b[1];
+    out[1] = a[2]*b[0] - a[0]*b[2];
+    out[2] = a[0]*b[1] - a[1]*b[0];
+}
+
+float dot(float a[3], float b[3]) {
+    return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
 }
 
 // Aplica a transformacao que coloca o sistema de coordendas local em uma
@@ -104,22 +109,43 @@ void cross(float a[3], float b[3], float out[3]) {
 void ChangeCoordSys(GLdouble ax, GLdouble ay, GLdouble az, GLdouble bx,
                     GLdouble by, GLdouble bz, GLdouble upx, GLdouble upy,
                     GLdouble upz) {
-    float x[3], y[3], z[3];
+    // float x[3], y[3], z[3];
+    float z[3];
+    float x[3];
     // COLOQUE SEU CODIGO AQUI
 
+    float a[3] = {ax, ay, az};
+    float b[3] = {bx, by, bz};
+    float y[3] = {ax - bx, ay - by, az - bz};
+    
+
+    z[0] = upx;
+    z[1] = upy;
+    z[2] = upz;
+
+    cross(z, y, x);
+    normalize(x);
+    normalize(y);
+    normalize(z);
+
+    translateMatrix[0][0] = x[0];
+    translateMatrix[0][1] = x[1];
+    translateMatrix[0][2] = x[2];
+
+    translateMatrix[1][0] = y[0];
+    translateMatrix[1][1] = y[1];
+    translateMatrix[1][2] = y[2];
+
+    translateMatrix[2][0] = z[0];
+    translateMatrix[2][1] = z[1];
+    translateMatrix[2][2] = z[2];
+
+
     translateMatrix[3][0] = bx;
     translateMatrix[3][1] = by;
     translateMatrix[3][2] = bz;
-
-    //    translateMatrix[0][0] = 2;
-    //    translateMatrix[0][1] = 2;
-    //    translateMatrix[0][2] = 2;
-    //    translateMatrix[0][3] = 0;
 
     glMultMatrixf(&translateMatrix[0][0]);
-    translateMatrix[3][0] = bx;
-    translateMatrix[3][1] = by;
-    translateMatrix[3][2] = bz;
 }
 
 void DrawAxes(double size) {
@@ -163,9 +189,9 @@ void DrawAxes(double size) {
 
 // ALTERE AQUI - SEU CODIGO AQUI
 // Usar meshlab para obter os pontos abaixo
-int pontoArmaAponta = 0;
-int pontoPosicaoArma = 0;
-int up[3] = {0, 0, 0};
+int pontoArmaAponta = 4275;
+int pontoPosicaoArma = 2910;
+int up[3] = {0, 1, 0};
 void desenhaJogador() {
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
@@ -175,14 +201,14 @@ void desenhaJogador() {
     soldado.draw();
 
     if (transformacaoArmaToggle) {
-        ChangeCoordSys(0, 0, 0, 1, 1, 1, 0, 1, 0);
-        //        ChangeCoordSys(soldado.vertsPos[pontoArmaAponta].x,
-        //                       soldado.vertsPos[pontoArmaAponta].y,
-        //                       soldado.vertsPos[pontoArmaAponta].z,
-        //                       soldado.vertsPos[pontoPosicaoArma].x,
-        //                       soldado.vertsPos[pontoPosicaoArma].y,
-        //                       soldado.vertsPos[pontoPosicaoArma].z, up[0],
-        //                       up[1], up[2]);
+        // ChangeCoordSys(0, 0, 0, 1, 1, 1, 0, 1, 0);
+               ChangeCoordSys(soldado.vertsPos[pontoArmaAponta].x,
+                              soldado.vertsPos[pontoArmaAponta].y,
+                              soldado.vertsPos[pontoArmaAponta].z,
+                              soldado.vertsPos[pontoPosicaoArma].x,
+                              soldado.vertsPos[pontoPosicaoArma].y,
+                              soldado.vertsPos[pontoPosicaoArma].z, up[0],
+                              up[1], up[2]);
     }
 
     if (coordsysToggle == 1)
@@ -220,31 +246,31 @@ void imgui_display() {
     if (imgui_shouldRenderMainWindow) {
         ImGui::Begin("Debug", &imgui_shouldRenderMainWindow);
         ImGui::Text("myLookAt matrix: ");
-        ImGui::Text("\t%.2f %.2f %.2f %.2f\n", myLookAtMatrix[0][0],
+        ImGui::Text("\t%03.2f %03.2f %03.2f %03.2f\n", myLookAtMatrix[0][0],
                     myLookAtMatrix[0][1], myLookAtMatrix[0][2],
                     myLookAtMatrix[0][3]);
-        ImGui::Text("\t%.2f %.2f %.2f %.2f\n", myLookAtMatrix[1][0],
+        ImGui::Text("\t%03.2f %03.2f %03.2f %03.2f\n", myLookAtMatrix[1][0],
                     myLookAtMatrix[1][1], myLookAtMatrix[1][2],
                     myLookAtMatrix[1][3]);
-        ImGui::Text("\t%.2f %.2f %.2f %.2f\n", myLookAtMatrix[2][0],
+        ImGui::Text("\t%03.2f %03.2f %03.2f %03.2f\n", myLookAtMatrix[2][0],
                     myLookAtMatrix[2][1], myLookAtMatrix[2][2],
                     myLookAtMatrix[2][3]);
-        ImGui::Text("\t%.2f %.2f %.2f %.2f\n", myLookAtMatrix[3][0],
+        ImGui::Text("\t%03.2f %03.2f %03.2f %03.2f\n", myLookAtMatrix[3][0],
                     myLookAtMatrix[3][1], myLookAtMatrix[3][2],
                     myLookAtMatrix[3][3]);
 
         ImGui::Text("translate matrix: ");
-        ImGui::Text("\t%.2f %.2f %.2f %.2f\n", translateMatrix[0][0],
-                    translateMatrix[0][1], translateMatrix[0][2],
-                    translateMatrix[0][3]);
-        ImGui::Text("\t%.2f %.2f %.2f %.2f\n", translateMatrix[1][0],
-                    translateMatrix[1][1], translateMatrix[1][2],
-                    translateMatrix[1][3]);
-        ImGui::Text("\t%.2f %.2f %.2f %.2f\n", translateMatrix[2][0],
-                    translateMatrix[2][1], translateMatrix[2][2],
-                    translateMatrix[2][3]);
-        ImGui::Text("\t%.2f %.2f %.2f %.2f\n", translateMatrix[3][0],
-                    translateMatrix[3][1], translateMatrix[3][2],
+        ImGui::Text("\t%03.2f %03.2f %03.2f %03.2f\n", translateMatrix[0][0],
+                    translateMatrix[1][0], translateMatrix[2][0],
+                    translateMatrix[3][0]);
+        ImGui::Text("\t%03.2f %03.2f %03.2f %03.2f\n", translateMatrix[0][1],
+                    translateMatrix[1][1], translateMatrix[2][1],
+                    translateMatrix[3][1]);
+        ImGui::Text("\t%03.2f %03.2f %03.2f %03.2f\n", translateMatrix[0][2],
+                    translateMatrix[1][2], translateMatrix[2][2],
+                    translateMatrix[3][2]);
+        ImGui::Text("\t%03.2f %03.2f %03.2f %03.2f\n", translateMatrix[0][3],
+                    translateMatrix[1][3], translateMatrix[2][3],
                     translateMatrix[3][3]);
         ImGui::End();
     }
